@@ -34,15 +34,15 @@
 
 #include <sys/cdefs.h>
 #ifndef lint
-__COPYRIGHT("@(#) Copyright (c) 1989, 1993, 1995\
- The Regents of the University of California.  All rights reserved.");
+//__COPYRIGHT("@(#) Copyright (c) 1989, 1993, 1995\
+// The Regents of the University of California.  All rights reserved.");
 #endif /* not lint */
 
 #ifndef lint
 #if 0
 static char sccsid[] = "@(#)showmount.c	8.3 (Berkeley) 3/29/95";
 #endif
-__RCSID("$NetBSD: showmount.c,v 1.22 2016/01/26 16:23:27 christos Exp $");
+//__RCSID("$NetBSD: showmount.c,v 1.22 2016/01/26 16:23:27 christos Exp $");
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -53,7 +53,9 @@ __RCSID("$NetBSD: showmount.c,v 1.22 2016/01/26 16:23:27 christos Exp $");
 #include <rpc/rpc.h>
 #include <rpc/pmap_clnt.h>
 #include <rpc/pmap_prot.h>
-#include <nfs/rpcv2.h>
+//#include <nfs/rpcv2.h>
+#include "rpcv2.h"
+//#include <nfs/nfs.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -90,7 +92,8 @@ static struct exportslist *exports;
 static int type = 0;
 
 static void	print_dump(struct mountlist *);
-__dead static void	usage(void);
+//__dead static void	usage(void);
+static void	usage(void);
 static int	xdr_mntdump(XDR *, struct mountlist **);
 static int	xdr_exports(XDR *, struct exportslist **);
 static int	tcp_callrpc(const char *host, int prognum, int versnum,
@@ -219,13 +222,25 @@ tcp_callrpc(const char *host, int prognum, int versnum, int procnum,
 	struct timeval timeout;
 	int rval;
 
+
+//struct sockaddr_in servaddr;
+//
+///* 填充struct sockaddr_in */
+//bzero(&servaddr, sizeof(servaddr));
+//servaddr.sin_family = AF_INET;
+//inet_pton(AF_INET, host, &servaddr.sin_addr);
+//
+//unsigned short port = pmap_getport(&servaddr, prognum, versnum, IPPROTO_UDP);
+
+//    printf("pmap_getport after. port:%u\n", port);
+//    return -1;
 	if ((client = clnt_create(host, prognum, versnum, "tcp")) == NULL &&
 	    (client = clnt_create(host, prognum, versnum, "udp")) == NULL)
 		return ((int) rpc_createerr.cf_stat);
 
 	timeout.tv_sec = 25;
 	timeout.tv_usec = 0;
-	rval = (int) clnt_call(client, procnum, 
+	rval = (int) clnt_call(client, procnum,
 			       inproc, in,
 			       outproc, out,
 			       timeout);
